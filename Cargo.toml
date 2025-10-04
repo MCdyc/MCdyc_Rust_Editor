@@ -1,0 +1,10 @@
+[package]
+name = "editor"
+version = "0.1.0"
+edition = "2024"
+authors = ["MCdyc <MCdyc@qq.com>"]
+
+[dependencies]
+crossterm = "0.29.0"
+termion = "4.0.5"
+# text_io = "0.1.13"
