@@ -21,7 +21,7 @@ impl Editor {
         Terminal::terminate().unwrap();
         result.unwrap();
     }
-    fn draw_rows() -> Result<(), std::io::Error> {
+    fn draw_rows() -> Result<(), Error> {
         let Size { width: _, height } = Terminal::size()?;
 
         for current_rows in 0..height {
@@ -33,7 +33,7 @@ impl Editor {
         }
         Ok(())
     }
-    fn refresh_screen(&self) -> Result<(), std::io::Error> {
+    fn refresh_screen(&self) -> Result<(), Error> {
         Terminal::hide_cursor()?;
         if self.should_quit {
             Terminal::clear_screen()?;
@@ -62,7 +62,7 @@ impl Editor {
         }
     }
     //  运行编辑器的 REPL 循环，返回 Result
-    fn repl(&mut self) -> Result<(), std::io::Error> {
+    fn repl(&mut self) -> Result<(), Error> {
         //简化错误处理
         loop {
             self.refresh_screen()?;
