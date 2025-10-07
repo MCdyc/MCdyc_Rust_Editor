@@ -15,6 +15,7 @@ pub struct Position {
     pub y: u16,
 }
 pub struct Terminal;
+
 impl Terminal {
     //刷新输出缓冲区
     pub fn terminate() -> Result<(), Error> {
@@ -32,8 +33,7 @@ impl Terminal {
     }
     //刷新输出缓冲区
     pub fn execute() -> Result<(), Error> {
-        stdout().flush()?;
-        Ok(())
+        stdout().flush()
     }
     //获取终端大小
     pub fn size() -> Result<Size, Error> {
@@ -41,32 +41,33 @@ impl Terminal {
         Ok(Size { width, height })
     }
     //加入字符串到输出缓冲区
+    fn queue_command<T>(command: T) -> Result<(), Error>
+    where
+        T: crossterm::Command,
+    {
+        queue!(stdout(), command)
+    }
     pub fn print(string: &str) -> Result<(), Error> {
-        queue!(stdout(), Print(string))?;
-        Ok(())
+        Self::queue_command(Print(string))
     }
     //清屏
     pub fn clear_screen() -> Result<(), Error> {
-        queue!(stdout(), Clear(ClearType::All))?;
-        Ok(())
+        Self::queue_command(Clear(ClearType::All))
     }
     //清除当前行
     pub fn clear_line() -> Result<(), Error> {
-        queue!(stdout(), Clear(ClearType::CurrentLine))?;
-        Ok(())
+        Self::queue_command(Clear(ClearType::CurrentLine))
     }
     //将光标移动到(x,y)
     pub fn move_cursor_to(position: Position) -> Result<(), Error> {
-        queue!(stdout(), MoveTo(position.x, position.y))?;
-        Ok(())
+        Self::queue_command(MoveTo(position.x, position.y))
     }
     //隐藏和显示光标
     pub fn hide_cursor() -> Result<(), Error> {
-        queue!(stdout(), Hide)?;
-        Ok(())
+        Self::queue_command(Hide)
     }
+
     pub fn show_cursor() -> Result<(), Error> {
-        queue!(stdout(), Show)?;
-        Ok(())
+        Self::queue_command(Show)
     }
 }
