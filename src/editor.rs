@@ -1,8 +1,12 @@
 use crossterm::event::{Event, KeyCode, KeyEvent, KeyModifiers, read};
 mod terminal;
 //导入外部库
-use std::io::Error;
+use std::{io::Error, string};
 use terminal::{Position, Size, Terminal};
+
+const NAME: &str = env!("CARGO_PKG_NAME");
+const VERSION: &str = env!("CARGO_PKG_VERSION");
+const AUTHOR: &str = env!("CARGO_PKG_AUTHORS");
 pub struct Editor {
     should_quit: bool,
 }
@@ -21,12 +25,35 @@ impl Editor {
         Terminal::terminate().unwrap();
         result.unwrap();
     }
+    fn draw_message(str: String) -> Result<(), Error> {
+        let mut message = str;
+        let Size { width, height: _ } = Terminal::size()?;
+        let padding = width.saturating_sub(message.len() as u16) / 2 - 1;
+        let spaces = " ".repeat(padding as usize);
+        message = format!("~{}{}", spaces, message);
+        // message.truncate(width as usize);
+        Terminal::print(&message)?;
+        Ok(())
+    }
+
+    fn draw_empty_row() -> Result<(), Error> {
+        Terminal::print("~")
+    }
+
     fn draw_rows() -> Result<(), Error> {
         let Size { width: _, height } = Terminal::size()?;
 
         for current_rows in 0..height {
             Terminal::clear_line()?;
-            Terminal::print("~")?;
+            match current_rows {
+                r if r == height / 3 => {
+                    Self::draw_message(format!("{} -- version {}", NAME, VERSION))?
+                }
+                r if r == height / 3 + 1 => {
+                    Self::draw_message(format!("by {}", AUTHOR))?;
+                }
+                _ => Self::draw_empty_row()?,
+            }
             if current_rows < height - 1 {
                 Terminal::print("\r\n")?;
             }
