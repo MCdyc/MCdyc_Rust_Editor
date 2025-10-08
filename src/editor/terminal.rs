@@ -6,13 +6,13 @@ use std::io::{Error, Write, stdout};
 
 #[derive(Copy, Clone)]
 pub struct Size {
-    pub width: u16,
-    pub height: u16,
+    pub width: usize,
+    pub height: usize,
 }
 #[derive(Copy, Clone)]
 pub struct Position {
-    pub x: u16,
-    pub y: u16,
+    pub x: usize,
+    pub y: usize,
 }
 pub struct Terminal;
 
@@ -38,6 +38,7 @@ impl Terminal {
     //获取终端大小
     pub fn size() -> Result<Size, Error> {
         let (width, height) = size()?;
+        let (width, height) = (width as usize, height as usize);
         Ok(Size { width, height })
     }
     //加入字符串到输出缓冲区
@@ -60,7 +61,7 @@ impl Terminal {
     }
     //将光标移动到(x,y)
     pub fn move_cursor_to(position: Position) -> Result<(), Error> {
-        Self::queue_command(MoveTo(position.x, position.y))
+        Self::queue_command(MoveTo(position.x as u16, position.y as u16))
     }
     //隐藏和显示光标
     pub fn hide_cursor() -> Result<(), Error> {
