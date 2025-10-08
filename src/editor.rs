@@ -25,19 +25,24 @@ impl Editor {
         Terminal::terminate().unwrap();
         result.unwrap();
     }
+    fn draw_empty_row() -> Result<(), Error> {
+        Terminal::print("~")
+    }
     fn draw_message(str: String) -> Result<(), Error> {
         let mut message = str;
         let Size { width, height: _ } = Terminal::size()?;
-        let padding = width.saturating_sub(message.len() as u16) / 2 - 1;
-        let spaces = " ".repeat(padding as usize);
+        let len = message.len();
+        if len >= width {
+            Self::draw_empty_row()?;
+            return Ok(());
+        }
+        let padding = width.saturating_sub(message.len()) / 2;
+        let padding = padding.saturating_sub(1);
+        let spaces = " ".repeat(padding);
         message = format!("~{}{}", spaces, message);
         // message.truncate(width as usize);
         Terminal::print(&message)?;
         Ok(())
-    }
-
-    fn draw_empty_row() -> Result<(), Error> {
-        Terminal::print("~")
     }
 
     fn draw_rows() -> Result<(), Error> {
